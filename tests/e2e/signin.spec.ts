@@ -57,7 +57,7 @@ function setLocalStorage() {
     email: testEmail,
     password: testPassword,
     withInfo: true,
-    isLoggedIn: true,
+    isLoggedIn: false,
   };
   const map = new Map();
   map.set(testEmail, credential);
