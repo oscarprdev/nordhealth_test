@@ -10,4 +10,8 @@ export class MockAuthRepository implements AuthRepository {
   async save(_credentials: Credentials): Promise<void> {
     return Promise.resolve();
   }
+
+  async findLoggedIn(): Promise<Credentials | null> {
+    return Promise.resolve(null);
+  }
 }

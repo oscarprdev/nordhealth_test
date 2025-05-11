@@ -9,22 +9,23 @@ import { isErrorResponse } from '~/features/shared/domain/Response';
  */
 const PROTECTED_ROUTES = ['/dashboard'];
 
-export default async function useCustomAuthMiddleware(path: string, props?: string) {
+export default async function useCustomAuthMiddleware(path: string, email?: string) {
   const authRepository = new LocalStorageAuthRepository();
   const authValidateUsecase = new AuthValidateUsecase(authRepository);
+  const response = await authValidateUsecase.execute();
 
-  if (!props) {
-    return navigateTo('/signin');
-  }
-
-  const response = await authValidateUsecase.execute(props);
   if (isErrorResponse(response)) {
     return navigateTo('/signin');
   }
 
-  if (!response.value && PROTECTED_ROUTES.includes(path)) {
-    return navigateTo('/signin');
-  } else if (response.value && path === '/signin') {
-    return navigateTo('/dashboard');
+  const isUserLoggedIn = response?.value?.isLoggedIn;
+  if (isUserLoggedIn && path === '/signin') {
+    return navigateTo(`/dashboard/${email || response.value.email.value}`);
   }
+
+  if (!isUserLoggedIn && PROTECTED_ROUTES.some(route => path.match(route))) {
+    return navigateTo('/signin');
+  }
+
+  return;
 }

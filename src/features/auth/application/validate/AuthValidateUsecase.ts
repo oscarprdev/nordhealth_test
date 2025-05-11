@@ -1,15 +1,19 @@
 import type { AuthRepository } from '../../domain/AuthRepository';
 import { errorResponse, successResponse, type Response } from '~/features/shared/domain/Response';
-import { CredentialsEmail } from '../../domain/CredentialsEmail';
+import type { Credentials } from '../../domain/Credentials';
 
 export class AuthValidateUsecase {
   constructor(private readonly repository: AuthRepository) {}
 
-  async execute(email: string): Promise<Response<boolean, string>> {
+  async execute(): Promise<Response<Credentials, string>> {
     try {
-      const credentialsEmail = new CredentialsEmail(email);
-      const credentials = await this.repository.get(credentialsEmail);
-      return successResponse(credentials !== null && credentials.isLoggedIn.value);
+      const credentials = await this.repository.findLoggedIn();
+
+      if (!credentials) {
+        return errorResponse('No credentials found');
+      }
+
+      return successResponse(credentials);
     } catch (error) {
       return errorResponse(error instanceof Error ? error.message : 'Failed to validate');
     }

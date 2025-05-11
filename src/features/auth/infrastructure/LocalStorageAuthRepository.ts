@@ -19,6 +19,17 @@ export class LocalStorageAuthRepository implements AuthRepository {
     return Promise.resolve(Credentials.create(credential));
   }
 
+  async findLoggedIn(): Promise<Credentials | null> {
+    const credentials = this.getAllFromLocalStorage();
+    const credential = Array.from(credentials.values()).find(credential => credential.isLoggedIn);
+
+    if (!credential) {
+      return Promise.resolve(null);
+    }
+
+    return Promise.resolve(Credentials.create(credential));
+  }
+
   async save(credentials: Credentials): Promise<void> {
     const allCredentials = this.getAllFromLocalStorage();
     const credentialsPrimitives = credentials.toPrimitives();
