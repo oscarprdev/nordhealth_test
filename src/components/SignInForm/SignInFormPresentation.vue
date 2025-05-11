@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { SignInFormPresentationEmits, SignInFormPresentationProps } from './SignInFormPresentation.types';
+import AuthPasswordInput from '../AuthPasswordInput/AuthPasswordInput.vue';
 
 defineProps<SignInFormPresentationProps>();
 const emit = defineEmits<SignInFormPresentationEmits>();
@@ -14,25 +15,36 @@ const emit = defineEmits<SignInFormPresentationEmits>();
     gap="m"
   >
     <img
+      data-testid="auth-logo"
       class="auth-logo"
       alt="Provet Cloud logo"
       src="https://static-s3-eu.provetcloud.com/static/kuvat/provet_cloud_new_logo_570x80.png"
     />
     <provet-banner
       v-if="formState.successMessage"
+      data-testid="auth-success-message"
       variant="success"
     >
       {{ formState.successMessage }}
     </provet-banner>
     <provet-banner
       v-if="formState.errors.global"
+      data-testid="auth-error-message"
       variant="danger"
     >
       {{ formState.errors.global }}
     </provet-banner>
     <provet-card padding="l">
-      <h1 slot="header">Sign in</h1>
-      <form @submit.prevent="emit('submit', formState)">
+      <h1
+        slot="header"
+        data-testid="auth-title"
+      >
+        Sign in
+      </h1>
+      <form
+        data-testid="auth-form"
+        @submit.prevent="emit('submit', formState)"
+      >
         <provet-stack>
           <provet-input
             expand
@@ -40,10 +52,11 @@ const emit = defineEmits<SignInFormPresentationEmits>();
             label="Email"
             name="email"
             type="email"
+            data-testid="auth-email-input"
             placeholder="user@example.com"
             :value="formState.values.email"
             :error="formState.errors.email"
-            @input="emit('change', $event.target.name, $event.target.value)"
+            @input="emit('change', 'email', $event.target.value)"
           />
           <AuthPasswordInput
             :value="formState.values.password"
@@ -51,6 +64,7 @@ const emit = defineEmits<SignInFormPresentationEmits>();
             @input="emit('change', 'password', $event)"
           />
           <provet-button
+            data-testid="auth-sign-in-button"
             :disabled="formState.isLoading"
             type="submit"
             variant="primary"
@@ -59,7 +73,10 @@ const emit = defineEmits<SignInFormPresentationEmits>();
         </provet-stack>
       </form>
     </provet-card>
-    <provet-card class="n-align-center">
+    <provet-card
+      data-testid="auth-sign-up-link"
+      class="n-align-center"
+    >
       New to Nord?
       <NuxtLink to="/signup"> Sign up </NuxtLink>
     </provet-card>
