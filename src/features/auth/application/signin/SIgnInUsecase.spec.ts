@@ -4,6 +4,7 @@ import { successResponse, errorResponse } from '~/features/shared/domain/Respons
 import { MockAuthRepository } from '../../__mocks__/MockAuthRepository';
 import type { AuthRepository } from '../../domain/AuthRepository';
 import { Credentials } from '../../domain/Credentials';
+
 describe('SignUpUsecase', () => {
   let authRepository: AuthRepository;
   let usecase: SignInUsecase;
