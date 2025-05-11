@@ -26,7 +26,7 @@ export class SignUpUsecase {
 
       if (existingCredentials) {
         return errorResponse<AuthErrorResponse>({
-          global: 'Invalid credentials',
+          global: 'User already exists',
           email: '',
           password: '',
         });
