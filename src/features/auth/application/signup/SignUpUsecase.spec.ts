@@ -7,15 +7,18 @@ import type { AuthRepository } from '../../domain/AuthRepository';
 describe('SignUpUsecase', () => {
   let authRepository: AuthRepository;
   let usecase: SignUpUsecase;
-  let spySignUp: MockInstance;
+  let spySave: MockInstance;
+  let spyGet: MockInstance;
 
   beforeEach(() => {
     authRepository = new MockAuthRepository();
     usecase = new SignUpUsecase(authRepository);
-    spySignUp = vi.spyOn(authRepository, 'signUp');
+    spySave = vi.spyOn(authRepository, 'save');
+    spyGet = vi.spyOn(authRepository, 'get');
   });
 
   test('should sign up a user with valid credentials', async () => {
+    spyGet.mockImplementationOnce(() => Promise.resolve(null));
     const response = await usecase.execute('test@test.com', 'password', true);
     expect(response).toEqual(
       successResponse({
@@ -24,6 +27,7 @@ describe('SignUpUsecase', () => {
           email: 'test@test.com',
           password: 'password',
           withInfo: true,
+          isLoggedIn: false,
         },
       })
     );
@@ -55,7 +59,7 @@ describe('SignUpUsecase', () => {
   });
 
   test('should return an error if signUp repository method fails', async () => {
-    spySignUp.mockRejectedValueOnce(new Error('Failed to sign up'));
+    spySave.mockRejectedValueOnce(new Error('Failed to sign up'));
     const response = await usecase.execute('test@test.com', 'password');
     expect(response).toEqual(errorResponse({ email: '', password: '', global: 'Failed to sign up' }));
   });

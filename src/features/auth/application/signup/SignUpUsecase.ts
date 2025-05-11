@@ -1,7 +1,7 @@
 import type { AuthRepository } from '~/features/auth/domain/AuthRepository';
 import type { AuthErrorResponse } from '~/features/auth/domain/AuthErrorResponse';
 import type { AuthSuccessResponse } from '~/features/auth/domain/AuthSuccessResponse';
-import { SignUpCredentials, type SignUpCredentialsPrimitives } from '~/features/auth/domain/SignUpCredentials';
+import { Credentials, type CredentialsPrimitives } from '~/features/auth/domain/Credentials';
 import { errorResponse, successResponse, type Response } from '~/features/shared/domain/Response';
 
 export class SignUpUsecase {
@@ -11,9 +11,9 @@ export class SignUpUsecase {
     email: string,
     password: string,
     withInfo: boolean = false
-  ): Promise<Response<AuthSuccessResponse<SignUpCredentialsPrimitives>, AuthErrorResponse>> {
+  ): Promise<Response<AuthSuccessResponse<CredentialsPrimitives>, AuthErrorResponse>> {
     try {
-      const credentials = SignUpCredentials.create({ email, password, withInfo });
+      const credentials = Credentials.create({ email, password, withInfo, isLoggedIn: false });
 
       if (credentials.email.error || credentials.password.error) {
         return errorResponse<AuthErrorResponse>({
@@ -22,7 +22,17 @@ export class SignUpUsecase {
         });
       }
 
-      await this.repository.signUp(credentials);
+      const existingCredentials = await this.repository.get(credentials.email);
+
+      if (existingCredentials) {
+        return errorResponse<AuthErrorResponse>({
+          global: 'Invalid credentials',
+          email: '',
+          password: '',
+        });
+      }
+
+      await this.repository.save(credentials);
 
       return successResponse({
         successMessage: 'User signed up successfully!',
