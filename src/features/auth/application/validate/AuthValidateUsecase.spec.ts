@@ -7,12 +7,12 @@ import { Credentials } from '../../domain/Credentials';
 describe('AuthValidateUsecase', () => {
   let authRepository: MockAuthRepository;
   let usecase: AuthValidateUsecase;
-  let spyGet: MockInstance;
+  let spyFindLoggedIn: MockInstance;
 
   beforeEach(() => {
     authRepository = new MockAuthRepository();
     usecase = new AuthValidateUsecase(authRepository);
-    spyGet = vi.spyOn(authRepository, 'get');
+    spyFindLoggedIn = vi.spyOn(authRepository, 'findLoggedIn');
   });
 
   test('should validate a user', async () => {
@@ -22,26 +22,20 @@ describe('AuthValidateUsecase', () => {
       withInfo: false,
       isLoggedIn: true,
     });
-    spyGet.mockImplementationOnce(() => Promise.resolve(credentials));
-    const response = await usecase.execute('test@test.com');
-    expect(response).toEqual(successResponse(true));
+    spyFindLoggedIn.mockImplementationOnce(() => Promise.resolve(credentials));
+    const response = await usecase.execute();
+    expect(response).toEqual(successResponse(credentials));
   });
 
-  test('should return false if user is not logged in', async () => {
-    const credentials = Credentials.create({
-      email: 'test@test.com',
-      password: 'password',
-      withInfo: false,
-      isLoggedIn: false,
-    });
-    spyGet.mockImplementationOnce(() => Promise.resolve(credentials));
-    const response = await usecase.execute('test@test.com');
-    expect(response).toEqual(successResponse(false));
+  test('should return error response if user is not logged in', async () => {
+    spyFindLoggedIn.mockImplementationOnce(() => Promise.resolve(null));
+    const response = await usecase.execute();
+    expect(response).toEqual(errorResponse('No credentials found'));
   });
 
   test('should return an error response if validate repository method fails', async () => {
-    spyGet.mockRejectedValueOnce(new Error('Failed to validate'));
-    const response = await usecase.execute('test@test.com');
+    spyFindLoggedIn.mockRejectedValueOnce(new Error('Failed to validate'));
+    const response = await usecase.execute();
     expect(response).toEqual(errorResponse('Failed to validate'));
   });
 });

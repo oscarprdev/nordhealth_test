@@ -9,4 +9,5 @@ import type { CredentialsEmail } from './CredentialsEmail';
 export interface AuthRepository {
   get(email: CredentialsEmail): Promise<Credentials | null>;
   save(credentials: Credentials): Promise<void>;
+  findLoggedIn(): Promise<Credentials | null>;
 }
