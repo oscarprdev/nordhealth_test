@@ -6,5 +6,6 @@
     "paths": {
       "~/*": ["./src/*"]
     }
-  }
+  },
+  "exclude": ["tests/e2e/**/*.ts"]
 }
