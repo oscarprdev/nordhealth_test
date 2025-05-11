@@ -1,5 +1,5 @@
 <template>
-  <div>
-    <h1>Signup</h1>
-  </div>
+  <main class="n-stack-horizontal">
+    <SignUpForm />
+  </main>
 </template>

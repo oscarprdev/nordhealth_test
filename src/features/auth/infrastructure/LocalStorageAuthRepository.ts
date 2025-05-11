@@ -1,5 +1,5 @@
 import type { AuthRepository } from '../domain/AuthRepository';
-import type { SignUpCredentials } from '../domain/SignUpCredentials';
+import type { SignUpCredentials, SignUpCredentialsPrimitives } from '../domain/SignUpCredentials';
 
 /**
  * Since assesment ask about client only implementation, we're using localStorage to store the credentials.
@@ -7,20 +7,29 @@ import type { SignUpCredentials } from '../domain/SignUpCredentials';
  */
 export class LocalStorageAuthRepository implements AuthRepository {
   async signUp(credentials: SignUpCredentials): Promise<void> {
-    const currentCredentials = localStorage.getItem('credentials');
+    const allCredentials = this.getAllFromLocalStorage();
+    const credentialsPrimitives = credentials.toPrimitives();
 
-    if (currentCredentials && JSON.parse(currentCredentials).email === credentials.email.value) {
-      throw new Error('Credentials already exist');
+    if (allCredentials.has(credentialsPrimitives.email)) {
+      throw new Error('Invalid credentials');
     }
 
-    localStorage.setItem(
-      'credentials',
-      JSON.stringify({
-        email: credentials.email.value,
-        password: credentials.password.value,
-        withInfo: credentials.withInfo.value,
-        loggedIn: false,
-      })
-    );
+    allCredentials.set(credentialsPrimitives.email, credentialsPrimitives);
+
+    localStorage.setItem('credentials', JSON.stringify(Array.from(allCredentials.entries())));
+
+    return Promise.resolve();
+  }
+
+  private getAllFromLocalStorage(): Map<string, SignUpCredentialsPrimitives> {
+    const credentials = localStorage.getItem('credentials');
+
+    if (credentials === null) {
+      return new Map();
+    }
+
+    const map = new Map(JSON.parse(credentials) as Iterable<[string, SignUpCredentialsPrimitives]>);
+
+    return map;
   }
 }
