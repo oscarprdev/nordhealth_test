@@ -24,7 +24,7 @@ const togglePasswordVisibility = () => {
 <template>
   <provet-input
     ref="inputRef"
-    data-testid="password-input"
+    data-testid="auth-password-input"
     label="Password"
     name="password"
     placeholder="••••••••"

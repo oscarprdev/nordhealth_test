@@ -15,6 +15,7 @@ const emit = defineEmits<SignUpFormPresentationEmits>();
     gap="m"
   >
     <img
+      data-testid="auth-logo"
       class="auth-logo"
       alt="Provet Cloud logo"
       src="https://static-s3-eu.provetcloud.com/static/kuvat/provet_cloud_new_logo_570x80.png"
@@ -22,19 +23,29 @@ const emit = defineEmits<SignUpFormPresentationEmits>();
     />
     <provet-banner
       v-if="formState.successMessage"
+      data-testid="auth-success-message"
       variant="success"
     >
       {{ formState.successMessage }}
     </provet-banner>
     <provet-banner
       v-if="formState.errors.global"
+      data-testid="auth-error-message"
       variant="danger"
     >
       {{ formState.errors.global }}
     </provet-banner>
     <provet-card padding="l">
-      <h1 slot="header">Sign up</h1>
-      <form @submit.prevent="emit('submit', formState)">
+      <h1
+        slot="header"
+        data-testid="auth-title"
+      >
+        Sign up
+      </h1>
+      <form
+        data-testid="auth-form"
+        @submit.prevent="emit('submit', formState)"
+      >
         <provet-stack>
           <provet-input
             expand
@@ -42,6 +53,7 @@ const emit = defineEmits<SignUpFormPresentationEmits>();
             label="Email"
             name="email"
             type="email"
+            data-testid="auth-email-input"
             placeholder="user@example.com"
             :value="formState.values.email"
             :error="formState.errors.email"
@@ -53,10 +65,13 @@ const emit = defineEmits<SignUpFormPresentationEmits>();
             @input="emit('change', 'password', $event)"
           />
           <provet-toggle
+            data-testid="auth-with-info-toggle"
             label="Do you want to receive ocassional product updates and announcements?"
+            :checked="formState.values.withInfo"
             @change="emit('change', 'withInfo', $event.target.checked)"
           />
           <provet-button
+            data-testid="auth-sign-up-button"
             :disabled="formState.isLoading"
             type="submit"
             variant="primary"
@@ -65,7 +80,10 @@ const emit = defineEmits<SignUpFormPresentationEmits>();
         </provet-stack>
       </form>
     </provet-card>
-    <provet-card class="n-align-center">
+    <provet-card
+      data-testid="auth-sign-in-link"
+      class="n-align-center"
+    >
       Already have an account?
       <NuxtLink to="/signin"> Sign in </NuxtLink>
     </provet-card>
