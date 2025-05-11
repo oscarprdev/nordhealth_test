@@ -1,5 +1,5 @@
 <template>
-  <div>
-    <h1>Signin</h1>
-  </div>
+  <main class="n-stack-horizontal">
+    <SignInForm />
+  </main>
 </template>
