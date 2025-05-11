@@ -23,10 +23,6 @@ export class LocalStorageAuthRepository implements AuthRepository {
     const allCredentials = this.getAllFromLocalStorage();
     const credentialsPrimitives = credentials.toPrimitives();
 
-    if (allCredentials.has(credentialsPrimitives.email)) {
-      throw new Error('Invalid credentials');
-    }
-
     allCredentials.set(credentialsPrimitives.email, credentialsPrimitives);
 
     localStorage.setItem('credentials', JSON.stringify(Array.from(allCredentials.entries())));
