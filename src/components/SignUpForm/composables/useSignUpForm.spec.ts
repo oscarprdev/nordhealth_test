@@ -8,7 +8,7 @@ describe('useSignUpForm', () => {
 
   beforeEach(() => {
     repository = new MockAuthRepository();
-    spySignUp = vi.spyOn(repository, 'signUp');
+    spySignUp = vi.spyOn(repository, 'save');
   });
 
   describe('handleChange', () => {

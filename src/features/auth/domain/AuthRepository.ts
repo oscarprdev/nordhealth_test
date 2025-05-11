@@ -1,4 +1,5 @@
-import type { SignUpCredentials } from './SignUpCredentials';
+import type { Credentials } from './Credentials';
+import type { CredentialsEmail } from './CredentialsEmail';
 
 /**
  * Using a repository pattern to abstract the authentication logic from the rest of the application.
@@ -6,5 +7,6 @@ import type { SignUpCredentials } from './SignUpCredentials';
  * We can easily change the authentication logic by implementing a different repository.
  */
 export interface AuthRepository {
-  signUp(credentials: SignUpCredentials): Promise<void>;
+  get(email: CredentialsEmail): Promise<Credentials | null>;
+  save(credentials: Credentials): Promise<void>;
 }

@@ -1,33 +1,38 @@
 import { expect, test, beforeEach, describe, type MockInstance, vi } from 'vitest';
-import { SignUpUsecase } from './SignUpUsecase';
+import { SignInUsecase } from './SignInUsecase';
 import { successResponse, errorResponse } from '~/features/shared/domain/Response';
 import { MockAuthRepository } from '../../__mocks__/MockAuthRepository';
 import type { AuthRepository } from '../../domain/AuthRepository';
+import { Credentials } from '../../domain/Credentials';
 
 describe('SignUpUsecase', () => {
   let authRepository: AuthRepository;
-  let usecase: SignUpUsecase;
+  let usecase: SignInUsecase;
   let spySave: MockInstance;
   let spyGet: MockInstance;
 
   beforeEach(() => {
     authRepository = new MockAuthRepository();
-    usecase = new SignUpUsecase(authRepository);
+    usecase = new SignInUsecase(authRepository);
     spySave = vi.spyOn(authRepository, 'save');
     spyGet = vi.spyOn(authRepository, 'get');
   });
 
-  test('should sign up a user with valid credentials', async () => {
-    spyGet.mockImplementationOnce(() => Promise.resolve(null));
-    const response = await usecase.execute('test@test.com', 'password', true);
+  test('should sign in a user with valid credentials', async () => {
+    spyGet.mockImplementationOnce(() =>
+      Promise.resolve(
+        Credentials.create({ email: 'test@test.com', password: 'password', withInfo: false, isLoggedIn: true })
+      )
+    );
+    const response = await usecase.execute('test@test.com', 'password');
     expect(response).toEqual(
       successResponse({
-        successMessage: 'User signed up successfully!',
+        successMessage: 'User signed in successfully!',
         values: {
           email: 'test@test.com',
           password: 'password',
-          withInfo: true,
-          isLoggedIn: false,
+          withInfo: false,
+          isLoggedIn: true,
         },
       })
     );
@@ -58,9 +63,20 @@ describe('SignUpUsecase', () => {
     expect(response).toEqual(errorResponse({ email: '', password: 'The password must be at least 8 characters long' }));
   });
 
-  test('should return an error if signUp repository method fails', async () => {
-    spySave.mockRejectedValueOnce(new Error('Failed to sign up'));
+  test('should return an error response if credentials are invalid', async () => {
+    spyGet.mockImplementationOnce(() => Promise.resolve(null));
     const response = await usecase.execute('test@test.com', 'password');
-    expect(response).toEqual(errorResponse({ email: '', password: '', global: 'Failed to sign up' }));
+    expect(response).toEqual(errorResponse({ email: '', password: '', global: 'Invalid credentials' }));
+  });
+
+  test('should return an error response if repository method fails', async () => {
+    spyGet.mockImplementationOnce(() =>
+      Promise.resolve(
+        Credentials.create({ email: 'test@test.com', password: 'password', withInfo: false, isLoggedIn: false })
+      )
+    );
+    spySave.mockRejectedValueOnce(new Error('Failed to sign in'));
+    const response = await usecase.execute('test@test.com', 'password');
+    expect(response).toEqual(errorResponse({ email: '', password: '', global: 'Failed to sign in' }));
   });
 });
