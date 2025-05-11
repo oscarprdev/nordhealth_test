@@ -72,7 +72,6 @@ const emit = defineEmits<SignUpFormPresentationEmits>();
           />
           <provet-button
             data-testid="auth-sign-up-button"
-            :disabled="formState.isLoading"
             type="submit"
             variant="primary"
             >Sign up</provet-button

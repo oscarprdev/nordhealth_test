@@ -1,7 +1,7 @@
 import type { Locator, Page } from '@playwright/test';
 import { expect } from '@playwright/test';
 
-export class SignUpPage {
+export class SignInPage {
   readonly form: Locator;
   readonly successBanner: Locator;
   readonly errorBanner: Locator;
@@ -9,8 +9,8 @@ export class SignUpPage {
   readonly emailInput: Locator;
   readonly passwordInput: Locator;
   readonly visibilityPasswordButton: Locator;
-  readonly withInfoToggle: Locator;
-  readonly signUpButton: Locator;
+  readonly signInButton: Locator;
+  readonly signUpLink: Locator;
   readonly emailEmptyError: Locator;
   readonly passwordEmptyError: Locator;
 
@@ -22,8 +22,8 @@ export class SignUpPage {
     this.emailInput = page.getByRole('textbox', { name: 'Email' });
     this.passwordInput = page.getByRole('textbox', { name: 'Password' });
     this.visibilityPasswordButton = page.getByTestId('toggle-visibility-button').getByRole('button');
-    this.withInfoToggle = page.getByTestId('auth-with-info-toggle').locator('input');
-    this.signUpButton = page.getByRole('button', { name: 'Sign up' });
+    this.signInButton = page.getByRole('button', { name: 'Sign in' });
+    this.signUpLink = page.getByTestId('auth-sign-up-link').getByRole('link', { name: 'Sign up' });
     this.emailEmptyError = page.getByText('Email is required');
     this.passwordEmptyError = page.getByText('Password is required');
   }
@@ -38,12 +38,12 @@ export class SignUpPage {
     await this.page.keyboard.type(password, { delay: 300 });
   }
 
-  async fillWithInfoToggle() {
-    await this.withInfoToggle.click();
+  async clickSignInButton() {
+    await this.signInButton.click({ delay: 300 });
   }
 
-  async clickSignUpButton() {
-    await this.signUpButton.click({ delay: 300 });
+  async clickSignUpLink() {
+    await this.signUpLink.click();
   }
 
   async checkSuccessBanner() {
@@ -56,14 +56,18 @@ export class SignUpPage {
 
   async checkTitle() {
     await expect(this.title).toBeVisible();
-    await expect(this.title).toHaveText('Sign up');
+    await expect(this.title).toHaveText('Sign in');
   }
 
   async togglePasswordVisibility() {
     await expect(this.passwordInput).toHaveAttribute('type', 'password');
-
     await this.visibilityPasswordButton.click();
+    await expect(this.passwordInput).toHaveAttribute('type', 'text', { timeout: 1000 });
+  }
 
-    await expect(this.passwordInput).toHaveAttribute('type', 'text');
+  async signIn(email: string, password: string) {
+    await this.fillEmail(email);
+    await this.fillPassword(password);
+    await this.clickSignInButton();
   }
 }

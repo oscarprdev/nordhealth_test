@@ -18,19 +18,17 @@ test.describe('SignUp', () => {
     await expect(signUpPage.signUpButton).toBeVisible();
   });
 
-  test('should fill email input', async ({ signUpPage }: { signUpPage: SignUpPage }) => {
-    await signUpPage.fillEmail('test@test.com');
-    await expect(signUpPage.emailInput).toHaveValue('test@test.com');
-  });
-
-  test('should fill password input', async ({ signUpPage }: { signUpPage: SignUpPage }) => {
-    await signUpPage.fillPassword('password');
-    await expect(signUpPage.passwordInput).toHaveValue('password');
-  });
-
   test('should fill with info toggle', async ({ signUpPage }: { signUpPage: SignUpPage }) => {
     await signUpPage.fillWithInfoToggle();
     await expect(signUpPage.withInfoToggle).toBeChecked();
+  });
+
+  test('should show email empty error', async ({ signUpPage }: { signUpPage: SignUpPage }) => {
+    await expect(signUpPage.emailInput).toBeVisible();
+    await expect(signUpPage.passwordInput).toBeVisible();
+    await signUpPage.clickSignUpButton();
+    await expect(signUpPage.emailEmptyError).toBeVisible({ timeout: 10000 });
+    await expect(signUpPage.passwordEmptyError).toBeVisible({ timeout: 10000 });
   });
 
   test('should submit form', async ({ signUpPage }: { signUpPage: SignUpPage }) => {

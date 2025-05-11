@@ -65,7 +65,6 @@ const emit = defineEmits<SignInFormPresentationEmits>();
           />
           <provet-button
             data-testid="auth-sign-in-button"
-            :disabled="formState.isLoading"
             type="submit"
             variant="primary"
             >Sign in</provet-button
