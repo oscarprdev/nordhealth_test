@@ -55,7 +55,7 @@ export default function useSignInForm(repository: AuthRepository) {
       formState.value.successMessage = response.value.successMessage;
       formState.value.isLoading = false;
 
-      await navigateTo('/dashboard');
+      await navigateTo(`/dashboard/${formState.value.values.email}`);
     };
 
     return {
